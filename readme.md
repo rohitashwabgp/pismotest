@@ -60,7 +60,7 @@ and can be run locally or via **Docker**.
 2. Run the provided script:
 
 ```cmd
-start.bat 
+./start.bat 
 ```
 
 ---
@@ -70,7 +70,7 @@ start.bat
 3. Set SPRING_PROFILES_ACTIVE to switch profile in script
 
 ```cmd
-docker-start.bat
+./docker-start.bat
 ```
 
 ## Profiles
