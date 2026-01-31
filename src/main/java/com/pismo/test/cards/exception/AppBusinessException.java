@@ -4,15 +4,15 @@ package com.pismo.test.cards.exception;
 public class AppBusinessException extends Exception {
 
     private final String id;
-    private final long status;
+    private final int status;
 
-    public AppBusinessException(String message, String id, long status) {
+    public AppBusinessException(String message, String id, int status) {
         super(message);
         this.id = id;
         this.status = status;
     }
 
-    public AppBusinessException(String message, String id, Throwable cause, long status) {
+    public AppBusinessException(String message, String id, Throwable cause, int status) {
         super(message, cause);
         this.id = id;
         this.status = status;
@@ -22,7 +22,7 @@ public class AppBusinessException extends Exception {
         return id;
     }
 
-    public long getStatus() {
+    public int getStatus() {
         return status;
     }
 

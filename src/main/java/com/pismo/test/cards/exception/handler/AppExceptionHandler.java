@@ -2,8 +2,8 @@ package com.pismo.test.cards.exception.handler;
 
 import com.pismo.test.cards.exception.AppBusinessException;
 import com.pismo.test.cards.exception.AppRuntimeException;
+import com.pismo.test.cards.exception.ErrorResponse;
 import org.springframework.beans.TypeMismatchException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -11,37 +11,38 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 
 @RestControllerAdvice
 public class AppExceptionHandler {
 
     @ExceptionHandler({AppBusinessException.class, AppRuntimeException.class})
-    public ResponseEntity<Map<String, Object>> handleBusinessException(AppBusinessException ex) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("timestamp", LocalDateTime.now());
-        body.put("status", ex.getStatus());
-        body.put("id", ex.getId());
-        body.put("message", ex.getMessage());
-        return ResponseEntity.status(Math.toIntExact(ex.getStatus())).body(body);
+    public ResponseEntity<ErrorResponse> handleBusinessException(AppBusinessException ex) {
+        ErrorResponse response = new ErrorResponse();
+        response.setError("Internal Server Error");
+        response.setMessage(ex.getMessage());
+        response.setStatus(ex.getStatus());
+        response.setTimestamp(LocalDateTime.now());
+        response.setId(ex.getId());
+        return ResponseEntity.status(Math.toIntExact(ex.getStatus())).body(response);
     }
 
     @ExceptionHandler({HttpMediaTypeNotSupportedException.class, TypeMismatchException.class})
-    public ResponseEntity<Map<String, Object>> handleTypeMismatch(Exception ex) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("status", 400);
-        body.put("error", "Bad Request");
-        body.put("message", ex.getMessage());
-        return ResponseEntity.badRequest().body(body);
+    public ResponseEntity<ErrorResponse> handleTypeMismatch(Exception ex) {
+        ErrorResponse response = new ErrorResponse();
+        response.setError("Bad Request");
+        response.setMessage(ex.getMessage());
+        response.setStatus(400);
+        response.setTimestamp(LocalDateTime.now());
+        return ResponseEntity.status(Math.toIntExact(400)).body(response);
     }
 
     @ExceptionHandler(NoResourceFoundException.class)
-    public ResponseEntity<Map<String, Object>> handleNotFound(NoResourceFoundException ex) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("status", 404);
-        body.put("error", "Not Found");
-        body.put("message", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+    public ResponseEntity<ErrorResponse> handleNotFound(NoResourceFoundException ex) {
+        ErrorResponse response = new ErrorResponse();
+        response.setError("Not Found Request");
+        response.setMessage(ex.getMessage());
+        response.setStatus(400);
+        response.setTimestamp(LocalDateTime.now());
+        return ResponseEntity.status(Math.toIntExact(400)).body(response);
     }
 }
