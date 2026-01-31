@@ -1,0 +1,37 @@
+package com.pismo.test.cards.config;
+
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.oauth2.jwt.NimbusReactiveJwtDecoder;
+import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
+import org.springframework.security.web.server.SecurityWebFilterChain;
+
+@Configuration
+@EnableWebFluxSecurity
+public class AppConfig {
+    private final PropertySource props;
+
+    public AppConfig(PropertySource props) {
+        this.props = props;
+    }
+
+    @Bean
+    public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) throws Exception {
+        http.csrf(ServerHttpSecurity.CsrfSpec::disable).authorizeExchange(auth -> auth.anyExchange().permitAll());
+        return http.build();
+    }
+
+    @Bean
+    public ReactiveJwtDecoder jwtDecoder() {
+        return NimbusReactiveJwtDecoder.withJwkSetUri(props.getJwk().getUri()).build();
+    }
+
+    @Bean
+    public OpenAPI apiInfo() {
+        return new OpenAPI().info(new Info().title("Cards API").version("v1").description("Account & transaction management service"));
+    }
+}

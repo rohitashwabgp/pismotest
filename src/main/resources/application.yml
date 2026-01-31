@@ -1,0 +1,80 @@
+spring:
+  application:
+    name: cards
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: when_authorized
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  datasource:
+    url: jdbc:h2:mem:cards
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+
+app:
+  cards:
+    account:
+      upload:
+        path: D:/accounts/%s/
+        maxSize: 10485760
+        allowedTypes:
+          - pdf
+          - jpg
+          - png
+    jwk:
+      uri: https://auth-server/.well-known/jwks.json
+    transaction:
+      queueSize: 10
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  datasource:
+    url: jdbc:h2:mem:cards
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+app:
+  cards:
+    account:
+      upload:
+        path: D:/accounts/%s/
+        maxSize: 10485760
+        allowedTypes:
+          - pdf
+          - jpg
+          - png
+    jwk:
+      uri: https://auth-server/.well-known/jwks.json
+    transaction:
+      queueSize: 10
