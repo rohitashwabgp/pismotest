@@ -29,9 +29,7 @@ and can be run locally or via **Docker**.
 - Custom validators planned for account, transaction, documents to customize error handling messages.
 - Mocked queue using BlockingQueue .
 - Document upload for account verification: PDF, JPG, PNG; max size 10 MB
-- Resumable / chunked file upload support (planned)
-- Partial reactive implementation for doc upload
-- r2dbc planned - full reactive implementation(planned) 
+- r2dbc/flux with chunk or s3 planned - full reactive implementation(planned) 
 - Profiles for Dev and Prod
 - Metrics via Spring Boot Actuator
 - Dockerized for easy deployment
@@ -95,7 +93,7 @@ and can be run locally or via **Docker**.
 
 **Open API Spec:**
 
-- http://localhost:8080/webjars/swagger-ui/index.html
+- http://localhost:8080/swagger-ui.html
 
 --- 
 ## Notes

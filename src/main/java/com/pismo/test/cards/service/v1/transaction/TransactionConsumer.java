@@ -4,10 +4,10 @@ import com.pismo.test.cards.consumers.Consumer;
 import com.pismo.test.cards.dao.TransactionDao;
 import com.pismo.test.cards.domn.Transactions;
 import com.pismo.test.cards.dto.request.TransactionRequest;
-import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 

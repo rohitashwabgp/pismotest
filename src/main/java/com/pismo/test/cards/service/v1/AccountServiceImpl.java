@@ -6,11 +6,10 @@ import com.pismo.test.cards.dto.request.AccountDto;
 import com.pismo.test.cards.domn.Account;
 import com.pismo.test.cards.dto.response.AccountDetails;
 import com.pismo.test.cards.exception.AppBusinessException;
-import jakarta.transaction.Transactional;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Mono;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -28,17 +27,16 @@ public class AccountServiceImpl implements AccountService {
     }
 
     /**
-     * Improvements: improvement on flux - make  transaction reactive by using proper libraries ||
-     * chunk based blocking processing || S3
+     * Improvements: Flux can be used
      *
      * @param accountDto AccountDto
-     * @param document   FilePart
+     * @param document   MultipartFile
      * @return Mono<Account>
      * @author Rohitashwa Kumar
      */
-    @Transactional
+    @Transactional(rollbackFor = AppBusinessException.class)
     @Override
-    public Mono<AccountDetails> createAccount(AccountDto accountDto, FilePart document) throws AppBusinessException {
+    public AccountDetails createAccount(AccountDto accountDto, MultipartFile document) throws AppBusinessException {
 
         try {
             Account account = accountDao.save(new Account(accountDto.getDocumentId()));
@@ -46,11 +44,8 @@ public class AccountServiceImpl implements AccountService {
             String filePath = String.format(props.getAccount().getUpload().getPath(), account.getAccountId());
 
             Files.createDirectories(Paths.get(filePath));
-
-            return document.transferTo(Paths.get(filePath.concat(document.filename()))).then(Mono.fromCallable(() -> buildResponse(account)))
-                    // Roll back compensating
-                    .onErrorResume(e -> Mono.fromRunnable(() -> accountDao.delete(account))
-                            .then(Mono.error(new RuntimeException("File upload failed, DB rolled back", e))));
+            document.transferTo(Paths.get(filePath.concat(document.getName())));
+            return buildResponse(account);
 
         } catch (Exception e) {
             throw new AppBusinessException(ExceptionUtils.getRootCauseMessage(e), accountDto.getDocumentId(), 500);

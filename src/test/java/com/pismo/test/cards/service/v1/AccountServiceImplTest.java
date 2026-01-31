@@ -10,9 +10,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.codec.multipart.FilePart;
-import reactor.core.publisher.Mono;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Optional;
 
@@ -38,8 +38,8 @@ class AccountServiceImplTest {
     private ArgumentCaptor<Long> accountIdCaptor;
 
     @Test
-    void verify_repository_called_with_document_id_when_successful_createAccount() throws AppBusinessException {
-        FilePart file = Mockito.mock(FilePart.class);
+    void verify_repository_called_with_document_id_when_successful_createAccount() throws AppBusinessException, IOException {
+        MultipartFile file = Mockito.mock(MultipartFile.class);
         AccountDto accountDto = new AccountDto();
         accountDto.setDocumentId("DOC123");
         Account account = new Account("DOC123");
@@ -48,9 +48,8 @@ class AccountServiceImplTest {
         when(propertySource.getAccount()).thenReturn(accountProperties);
         when(accountProperties.getUpload()).thenReturn(accountUploadProperties);
         when(accountUploadProperties.getPath()).thenReturn("/mock_path/%s");
-        when(file.filename()).thenReturn("TEST_DATA");
-        when(file.transferTo(any(Path.class))).thenReturn(Mono.empty());
-        AccountDetails accountDetails = accountService.createAccount(accountDto, file).block();
+        when(file.getName()).thenReturn("TEST_DATA");
+        AccountDetails accountDetails = accountService.createAccount(accountDto, file);
         verify(repository, times(1)).save(any());
         assertNotNull(accountDetails);
         verify(file).transferTo(any(Path.class));
@@ -60,7 +59,7 @@ class AccountServiceImplTest {
 
     @Test
     void verify_business_exception_when_path_not_set_createAccount() {
-        FilePart file = Mockito.mock(FilePart.class);
+        MultipartFile file = Mockito.mock(MultipartFile.class);
         AccountDto accountDto = new AccountDto();
         accountDto.setDocumentId("MOCK");
         when(propertySource.getAccount()).thenReturn(accountProperties);
@@ -72,7 +71,7 @@ class AccountServiceImplTest {
     void throws_business_exception_when_account_does_not_exists_getAccountDetails() throws AppBusinessException {
         long accountId = 1L;
         assertThrows(AppBusinessException.class, () -> accountService.getAccountDetails(accountId));
-        verify(repository,times(1)).findById(accountId);
+        verify(repository, times(1)).findById(accountId);
     }
 
     @Test
@@ -82,7 +81,7 @@ class AccountServiceImplTest {
         account.setAccountId(accountId);
         when(repository.findById(accountId)).thenReturn(Optional.of(account));
         accountService.getAccountDetails(accountId);
-        verify(repository,times(1)).findById(accountIdCaptor.capture());
+        verify(repository, times(1)).findById(accountIdCaptor.capture());
         assertEquals(accountId, accountIdCaptor.getValue());
     }
 }

@@ -8,6 +8,7 @@ import com.pismo.test.cards.dto.response.Transaction;
 import com.pismo.test.cards.enums.OperationType;
 import com.pismo.test.cards.exception.AppBusinessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -23,6 +24,7 @@ public class TransactionServiceImplV2 implements TransactionServiceV2 {
     }
 
     @Override
+    @Transactional(rollbackFor = AppBusinessException.class)
     public Transaction process(TransactionRequest transactionReq) throws AppBusinessException {
         validateTransactionRequest(transactionReq);
         try {

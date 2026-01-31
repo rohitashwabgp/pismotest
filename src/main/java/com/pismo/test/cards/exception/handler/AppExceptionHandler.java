@@ -5,10 +5,10 @@ import com.pismo.test.cards.exception.AppRuntimeException;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.reactive.resource.NoResourceFoundException;
-import org.springframework.web.server.UnsupportedMediaTypeStatusException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -24,11 +24,11 @@ public class AppExceptionHandler {
         body.put("status", ex.getStatus());
         body.put("id", ex.getId());
         body.put("message", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+        return ResponseEntity.status(Math.toIntExact(ex.getStatus())).body(body);
     }
 
-    @ExceptionHandler({UnsupportedMediaTypeStatusException.class, TypeMismatchException.class})
-    public ResponseEntity<Map<String, Object>> handleTypeMismatch(TypeMismatchException ex) {
+    @ExceptionHandler({HttpMediaTypeNotSupportedException.class, TypeMismatchException.class})
+    public ResponseEntity<Map<String, Object>> handleTypeMismatch(Exception ex) {
         Map<String, Object> body = new HashMap<>();
         body.put("status", 400);
         body.put("error", "Bad Request");
@@ -37,13 +37,11 @@ public class AppExceptionHandler {
     }
 
     @ExceptionHandler(NoResourceFoundException.class)
-    public ResponseEntity<Map<String, Object>> handleTypeMismatch(UnsupportedMediaTypeStatusException ex) {
+    public ResponseEntity<Map<String, Object>> handleNotFound(NoResourceFoundException ex) {
         Map<String, Object> body = new HashMap<>();
         body.put("status", 404);
         body.put("error", "Not Found");
         body.put("message", ex.getMessage());
-        return ResponseEntity.badRequest().body(body);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
     }
-
 }
-
