@@ -29,7 +29,7 @@ public class TransactionServiceImplV2 implements TransactionServiceV2 {
         validateTransactionRequest(transactionReq);
         try {
             Transactions transaction = new Transactions.Builder().eventDate(LocalDateTime.now()).accountId(transactionReq.getAccountId()).amount(transactionReq.getAmount()).operationTypeId(transactionReq.getOperationTypeId()).build();
-            this.transactionDao.save(transaction);
+            transactionDao.save(transaction);
             return new Transaction.Builder().accountId(transaction.getAccountId()).amount(transaction.getAmount()).eventDate(transaction.getEventDate()).operationTypeId(transaction.getOperationTypeId()).accountId(transaction.getAccountId()).build();
         } catch (Exception ex) {
             throw new AppBusinessException(ex.getMessage(), String.valueOf(transactionReq.getAccountId()), 500);
