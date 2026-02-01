@@ -3,7 +3,7 @@ package com.pismo.test.cards.service.v1.transaction;
 import com.pismo.test.cards.dao.AccountDao;
 import com.pismo.test.cards.dto.request.TransactionRequest;
 import com.pismo.test.cards.exception.AppBusinessException;
-import com.pismo.test.cards.mock.TransactionQueue;
+import com.pismo.test.cards.queue.TransactionQueue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

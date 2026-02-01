@@ -70,8 +70,9 @@ class AccountServiceImplTest {
     @Test
     void throws_business_exception_when_account_does_not_exists_getAccountDetails() throws AppBusinessException {
         long accountId = 1L;
-        assertThrows(AppBusinessException.class, () -> accountService.getAccountDetails(accountId));
+        Exception ex = assertThrows(AppBusinessException.class, () -> accountService.getAccountDetails(accountId));
         verify(repository, times(1)).findById(accountId);
+        assertEquals(ex.getMessage(), "Account not found");
     }
 
     @Test

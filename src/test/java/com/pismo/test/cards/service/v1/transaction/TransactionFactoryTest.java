@@ -57,7 +57,7 @@ class TransactionFactoryTest {
     }
 
     @Test
-    void get_when_debit_then_negate_amount() throws AppBusinessException {
+    void get_when_negateDecorator_then_negate_amount() throws AppBusinessException {
         TransactionRequest request = new TransactionRequest();
         double amount = 200;
         request.setAmount(amount);

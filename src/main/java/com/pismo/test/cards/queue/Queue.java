@@ -1,4 +1,4 @@
-package com.pismo.test.cards.mock;
+package com.pismo.test.cards.queue;
 
 import com.pismo.test.cards.consumers.Consumer;
 import com.pismo.test.cards.dto.request.TransactionRequest;

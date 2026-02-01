@@ -1,4 +1,4 @@
-package com.pismo.test.cards.mock;
+package com.pismo.test.cards.queue;
 
 import com.pismo.test.cards.config.PropertySource;
 import com.pismo.test.cards.consumers.Consumer;
@@ -42,7 +42,7 @@ public class TransactionQueue implements Queue<TransactionRequest> {
 
     @Override
     public boolean isRunning() {
-        return this.running && !this.consumerList.isEmpty();
+        return consumerThread != null && this.running && !this.consumerList.isEmpty();
     }
 
     @Override
