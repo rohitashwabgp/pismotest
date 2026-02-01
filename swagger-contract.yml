@@ -1,0 +1,244 @@
+openapi: 3.0.1
+info:
+  title: Cards API
+  description: Account & transaction management service
+  version: v1
+servers:
+  - url: http://localhost:8080
+    description: Generated server url
+tags:
+  - name: Transactions - sync
+    description: Synchronous APIs to save transactional event
+  - name: Accounts
+    description: APIs to get or create Account
+  - name: Transactions Async
+    description: Asynchronous APIs to save transactional event
+paths:
+  /cards/v2/transactions:
+    post:
+      tags:
+        - Transactions - sync
+      summary: Saves transactional events synchronously
+      description: Saves transactional events
+      operationId: process
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransactionRequest"
+        required: true
+      responses:
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "415":
+          description: Unsupported Media Type
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: 'Server '
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Transaction"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /cards/v1/transactions:
+    post:
+      tags:
+        - Transactions Async
+      summary: Saves transactional events asynchronously
+      description: Saves transactional events
+      operationId: process_1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransactionRequest"
+        required: true
+      responses:
+        "404":
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "415":
+          description: Unsupported Media Type
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "202":
+          description: Accepted
+          content:
+            text/plain:
+              schema:
+                type: string
+        "500":
+          description: 'Server '
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "400":
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /cards/v1/accounts:
+    post:
+      tags:
+        - Accounts
+      summary: Create account
+      description: Creates account with verified document upload
+      operationId: create
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              required:
+                - account
+                - document
+              type: object
+              properties:
+                account:
+                  $ref: "#/components/schemas/AccountDto"
+                document:
+                  type: string
+                  description: Document file
+                  format: binary
+      responses:
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "415":
+          description: Unsupported Media Type
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: 'Server '
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountDetails"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /cards/v1/accounts/{accountId}:
+    get:
+      tags:
+        - Accounts
+      summary: Get account by accountId
+      operationId: getAccount
+      parameters:
+        - name: accountId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountDetails"
+components:
+  schemas:
+    TransactionRequest:
+      required:
+        - accountId
+        - amount
+        - operationTypeId
+      type: object
+      properties:
+        accountId:
+          type: integer
+          format: int64
+        operationTypeId:
+          type: integer
+          format: int32
+        amount:
+          type: number
+          format: double
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        status:
+          type: integer
+          format: int32
+        timestamp:
+          type: string
+          format: date-time
+        id:
+          type: string
+    Transaction:
+      type: object
+      properties:
+        accountId:
+          type: integer
+          format: int64
+        operationTypeId:
+          type: integer
+          format: int32
+        amount:
+          type: number
+          format: double
+        eventDate:
+          type: string
+          format: date-time
+        transactionId:
+          type: integer
+          format: int64
+    AccountDto:
+      required:
+        - documentId
+      type: object
+      properties:
+        documentId:
+          type: string
+      description: Account JSON
+    AccountDetails:
+      type: object
+      properties:
+        accountId:
+          type: integer
+          format: int64
+        documentId:
+          type: string
