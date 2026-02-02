@@ -94,6 +94,11 @@ and can be run locally or via **Docker**.
 **Open API Spec:**
 
 - http://localhost:8080/swagger-ui.html
+- Account's curl(Swagger generate incorrect curl for multipart)
+- curl --location 'http://localhost:8080/cards/v1/accounts' \
+  --header 'Accept: application/json' \
+  --form 'account="{\"documentId\":\"e3334\"}";type=application/json' \
+  --form 'document=@"/C:/Users/Rohit/Downloads/09-01-2026.pdf"'
 
 --- 
 ## Notes

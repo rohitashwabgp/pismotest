@@ -53,7 +53,7 @@ public class TransactionController {
         if (operationType.isEmpty()) {
             throw new AppBusinessException("Invalid operation type", String.valueOf(transaction.getAccountId()), 404);
         }
-        this.factory.get(operationType.get()).process(transaction);
+        factory.get(operationType.get()).process(transaction);
         String message = "Transaction accepted";
         return ResponseEntity.accepted().body(message);
     }
