@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Service
 public class TransactionConsumer implements Consumer<TransactionRequest> {
     private final TransactionDao transactionDao;
-    private static final Logger log = LoggerFactory.getLogger(TransactionDecorator.class);
+    private static final Logger log = LoggerFactory.getLogger(TransactionConsumer.class);
 
     public TransactionConsumer(TransactionDao transactionDao) {
         this.transactionDao = transactionDao;

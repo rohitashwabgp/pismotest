@@ -35,6 +35,8 @@ public class AppConfig {
     }
 
 
+
+
     @Bean
     public JwtDecoder jwtDecoder() {
         return NimbusJwtDecoder.withJwkSetUri(props.getJwk().getUri()).build();

@@ -6,13 +6,13 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class NegateDecorator extends TransactionDecorator {
-    protected NegateDecorator(TransactionService transactionService) {
+    protected NegateDecorator(TransactionServiceImpl transactionService) {
         super(transactionService);
     }
 
     @Override
     public void process(TransactionRequest transaction) throws AppBusinessException {
-        transaction.setAmount(-transaction.getAmount());
+        transaction.setAmount(-transaction.getAmount());// settiing to -
         transactionService.process(transaction);
     }
 }

@@ -16,7 +16,7 @@ public class TransactionFactoryV2 {
     public TransactionServiceV2 get(OperationType type) {
         return switch (type) {
             case NORMAL_PURCHASE, PURCHASE_WITH_INSTALLMENT, WITHDRAWAL -> negateDecoratorV2;
-            case CREDIT_VOUCHER -> transactionServiceImplV2;
+            case CREDIT_VOUCHER, PAYMENT -> transactionServiceImplV2;
         };
     }
 }

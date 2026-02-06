@@ -72,7 +72,7 @@ class AccountServiceImplTest {
         long accountId = 1L;
         Exception ex = assertThrows(AppBusinessException.class, () -> accountService.getAccountDetails(accountId));
         verify(repository, times(1)).findById(accountId);
-        assertEquals(ex.getMessage(), "Account not found");
+        assertEquals("Account not found",ex.getMessage());
     }
 
     @Test

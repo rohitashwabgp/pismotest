@@ -4,7 +4,9 @@ import com.pismo.test.cards.dao.AccountDao;
 import com.pismo.test.cards.dto.request.TransactionRequest;
 import com.pismo.test.cards.exception.AppBusinessException;
 import com.pismo.test.cards.queue.TransactionQueue;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+
 
 @Service
 public class TransactionServiceImpl implements TransactionService {
@@ -19,12 +21,13 @@ public class TransactionServiceImpl implements TransactionService {
         this.accountDao = accountDao;
     }
 
+    @Async
     @Override
     public void process(TransactionRequest transaction) throws AppBusinessException {
         if (accountDao.existsById(transaction.getAccountId())) {
             this.queue.register(consumer);
             this.queue.start();
-            this.queue.sendMessage(transaction);
+            this.queue.sendMessage(transaction);// put the message
         } else {
             throw new AppBusinessException("Account does not exist", String.valueOf(transaction.getAccountId()), 404);
         }

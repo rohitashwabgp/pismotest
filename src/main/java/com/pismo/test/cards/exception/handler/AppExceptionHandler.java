@@ -41,8 +41,8 @@ public class AppExceptionHandler {
         ErrorResponse response = new ErrorResponse();
         response.setError("Not Found Request");
         response.setMessage(ex.getMessage());
-        response.setStatus(400);
+        response.setStatus(404);
         response.setTimestamp(LocalDateTime.now());
-        return ResponseEntity.status(Math.toIntExact(400)).body(response);
+        return ResponseEntity.status(Math.toIntExact(404)).body(response);
     }
 }

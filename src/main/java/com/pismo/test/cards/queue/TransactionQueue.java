@@ -42,7 +42,7 @@ public class TransactionQueue implements Queue<TransactionRequest> {
 
     @Override
     public boolean isRunning() {
-        return consumerThread != null && this.running && !this.consumerList.isEmpty();
+        return consumerThread != null && this.running && !this.consumerList.isEmpty() && !consumerThread.isInterrupted();
     }
 
     @Override

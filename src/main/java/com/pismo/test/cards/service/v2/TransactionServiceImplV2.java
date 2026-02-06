@@ -1,5 +1,6 @@
 package com.pismo.test.cards.service.v2;
 
+import com.pismo.test.cards.AppConstant;
 import com.pismo.test.cards.dao.AccountDao;
 import com.pismo.test.cards.dao.TransactionDao;
 import com.pismo.test.cards.domn.Transactions;
@@ -7,16 +8,21 @@ import com.pismo.test.cards.dto.request.TransactionRequest;
 import com.pismo.test.cards.dto.response.Transaction;
 import com.pismo.test.cards.enums.OperationType;
 import com.pismo.test.cards.exception.AppBusinessException;
+import com.pismo.test.cards.projections.AccountAggregate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class TransactionServiceImplV2 implements TransactionServiceV2 {
 
     private final AccountDao accountDao;
     private final TransactionDao transactionDao;
+
+    Map<Long, AccountAggregate> store = new HashMap<>();
 
     public TransactionServiceImplV2(AccountDao accountDao, TransactionDao transactionDao) {
         this.accountDao = accountDao;
@@ -29,6 +35,16 @@ public class TransactionServiceImplV2 implements TransactionServiceV2 {
         validateTransactionRequest(transactionReq);
         try {
             Transactions transaction = new Transactions.Builder().eventDate(LocalDateTime.now()).accountId(transactionReq.getAccountId()).amount(transactionReq.getAmount()).operationTypeId(transactionReq.getOperationTypeId()).build();
+
+            store.computeIfAbsent(transactionReq.getAccountId(), (k) -> new AccountAggregate(transactionReq.getAccountId()));
+
+            AccountAggregate accountAggregate = store.get(transactionReq.getAccountId());
+
+            if (AppConstant.CREDIT_LIMIT > accountAggregate.getBalance() + transactionReq.getAmount()) {
+                throw new AppBusinessException("Credit Limit Reached", String.valueOf(transactionReq.getAccountId()), 500);
+            }
+
+            accountAggregate.update(transactionReq.getAmount());
             transactionDao.save(transaction);
             return new Transaction.Builder().accountId(transaction.getAccountId()).amount(transaction.getAmount()).eventDate(transaction.getEventDate()).operationTypeId(transaction.getOperationTypeId()).accountId(transaction.getAccountId()).build();
         } catch (Exception ex) {
